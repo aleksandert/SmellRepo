@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Smell.ConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "0 5"
+    }
+  }
+}
