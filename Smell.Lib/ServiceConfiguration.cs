@@ -24,7 +24,7 @@ namespace Smell.Lib
             });
 
             // Register factory method returning CryptoExchange data from data file.
-            services.AddScoped<IEnumerable<CryptoExchange>>(provider =>
+            services.AddSingleton<IEnumerable<CryptoExchange>>(provider =>
             {
                 var options = provider.GetService<IOptions<JsonCryptoExchangeLoaderOptions>>().Value;
                 var funGetExchangeBalance = provider.GetService<Func<string, Balance>>();
