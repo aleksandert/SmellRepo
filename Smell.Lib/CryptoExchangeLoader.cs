@@ -21,6 +21,7 @@ namespace Smell.Lib
         public static IEnumerable<CryptoExchange> LoadFromJsonFile(string dataFile, Func<string, Balance> getExchangeBalance, int skip = 0, int take = int.MaxValue)
         {
             return File.ReadLines(dataFile)
+                    .AsParallel()
                     .Skip(skip).Take(take)
                     .Select(line =>
                     {
@@ -31,11 +32,19 @@ namespace Smell.Lib
                             JsonData = line.Substring(startPos),
                         };
                     })
-                    .Select(x => new CryptoExchange()
-                    {
-                        Name = x.Name,
-                        OrderBook = JsonConvert.DeserializeObject<OrderBook>(x.JsonData),
-                        Balance = getExchangeBalance(x.Name),
+                    .Select(x => {
+                        System.Diagnostics.Debug.WriteLine("Thread: {0}, Start: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, DateTime.UtcNow.Ticks);
+
+                        var cryptoExchange = new CryptoExchange()
+                        {
+                            Name = x.Name,
+                            OrderBook = JsonConvert.DeserializeObject<OrderBook>(x.JsonData),
+                            Balance = getExchangeBalance(x.Name),
+                        };
+
+                        System.Diagnostics.Debug.WriteLine("Thread: {0}, End: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, DateTime.UtcNow.Ticks);
+
+                        return cryptoExchange;
                     });
         }
     }
